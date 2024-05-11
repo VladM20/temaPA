@@ -1,6 +1,17 @@
-#include <stdio.h>
-#include <stdlib.h>
+#include "headers/liste.h"
 
+void readTeamName(FILE *input,char *dest,int n)
+{
+    char c;
+    for(int i=0;i<n;i++)
+    {
+        c=fgetc(input);
+        if(c=='\n')
+            break;
+        dest[i]=c;
+    }
+    dest[n]='\0';
+}
 
 int main(int argc,char* argv[])
 {
