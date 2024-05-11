@@ -1,5 +1,5 @@
 build:
-	gcc -o lanParty main.c 
+	gcc main.c liste.c -o lanParty
 run:
 	./lanParty /home/vlad/PA/date/t1/d.in
 clean:
