@@ -24,7 +24,7 @@ void addTeam(FILE *input,Team **teams)
 {
     Team *newTeam=(Team*)malloc(sizeof(Team));
     fscanf(input,"%d ",&newTeam->numberOfPlayers);
-    printf("%d ",newTeam->numberOfPlayers);
+    printf("\n%d ",newTeam->numberOfPlayers);
     newTeam->teamName=(char*)malloc(MAX_LENGTH*sizeof(char));
     readTeamName(input,newTeam->teamName,MAX_LENGTH);
     printf("%s\n",newTeam->teamName);
@@ -32,9 +32,7 @@ void addTeam(FILE *input,Team **teams)
     {
         newTeam->player[i].firstName=(char*)malloc(MAX_LENGTH*sizeof(char));
         newTeam->player[i].secondName=(char*)malloc(MAX_LENGTH*sizeof(char));
-        fscanf(input,"%s",newTeam->player[i].firstName);
-        fscanf(input,"%s",newTeam->player[i].secondName);
-        fscanf(input,"%d",&newTeam->player[i].points);
+        fscanf(input,"%s %s %d\n",newTeam->player[i].firstName,newTeam->player[i].secondName,&newTeam->player[i].points);
         printf("%s %s %d\n",newTeam->player[i].firstName,newTeam->player[i].secondName,newTeam->player[i].points);
     }
     fscanf(input,"\n");
