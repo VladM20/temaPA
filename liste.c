@@ -33,9 +33,10 @@ void addTeam(FILE *input,Team **teams)
         newTeam->player[i].firstName=(char*)malloc(MAX_LENGTH*sizeof(char));
         newTeam->player[i].secondName=(char*)malloc(MAX_LENGTH*sizeof(char));
         fscanf(input,"%s %s %d\n",newTeam->player[i].firstName,newTeam->player[i].secondName,&newTeam->player[i].points);
-        printf("%s %s %d\n",newTeam->player[i].firstName,newTeam->player[i].secondName,newTeam->player[i].points);
+        //printf("%s %s %d\n",newTeam->player[i].firstName,newTeam->player[i].secondName,newTeam->player[i].points);
     }
     fscanf(input,"\n");
+    teamPoints(newTeam);
     newTeam->next=*teams;
     *teams=newTeam;
 }
@@ -49,5 +50,14 @@ Team *createList(FILE *input)
     printf("%d\n",numberOfTeams);
     for(int i=0;i<numberOfTeams;i++)
         addTeam(input,&teams);
-        return teams;
+    return teams;
+}
+
+void teamPoints(Team *team)
+{
+    float points=0;
+    for(int i=0;i<team->numberOfPlayers;i++)
+        points+=team->player[i].points;
+    team->teamPoints=points/team->numberOfPlayers;
+    printf("Punctaj:%.2f\n",team->teamPoints);
 }

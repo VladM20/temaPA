@@ -14,6 +14,7 @@ typedef struct Player
 typedef struct Team
 {
     int numberOfPlayers;
+    float teamPoints;
     char *teamName;
     Player player[10];
     struct Team *next;
@@ -21,4 +22,7 @@ typedef struct Team
 
 int readTeamName(FILE*,char*,int);
 void addTeam(FILE*,Team**);
+//Creeaza lista de echipe.
 Team *createList(FILE*);
+//Calculeaza punctajul echipei.
+void teamPoints(Team*);

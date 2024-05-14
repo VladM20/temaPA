@@ -16,7 +16,7 @@ int main(int argc,char* argv[])
 {
     FILE * input=fopen(argv[1],"rt");
     Team *teams=createList(input);
-    printTeam(teams);
+    //printTeam(teams);
     fclose(input);
     FILE* out=fopen("r.out","wt");
     fclose(out);
