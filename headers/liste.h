@@ -20,9 +20,11 @@ typedef struct Team
     struct Team *next;
 } Team;
 
+//Citeste numele unei echipe fara \n.
 int readTeamName(FILE*,char*,int);
+//Adauga o echipa din fisier.
 void addTeam(FILE*,Team**);
 //Creeaza lista de echipe.
-Team *createList(FILE*);
+Team *createList(FILE*,int*);
 //Calculeaza punctajul echipei.
 void teamPoints(Team*);
