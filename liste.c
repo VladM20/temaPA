@@ -55,3 +55,68 @@ void teamPoints(Team *team)
         points+=team->player[i].points;
     team->teamPoints=points/team->numberOfPlayers;
 }
+
+float minPoints(Team *teams,int numberOfTeams)
+{
+    float min=0;
+    for(int i=0;i<numberOfTeams;i++)
+        if(min>teams->teamPoints)
+            min=teams->teamPoints;
+    return min;
+}
+
+void deletePlayers(Team **teams)
+{
+    for(int i=0;i<(*teams)->numberOfPlayers;i++)
+    {
+        free((*teams)->player[i].firstName);
+        free((*teams)->player[i].secondName);
+    }
+}
+
+void deleteTeam(Team **teams,float minPoints)
+{
+    if(*teams==NULL) 
+        return;
+    Team *temp=*teams;
+    if (temp->val==v)
+    {
+        *teams=(*teams)->next;
+        free(temp->teamName);
+        free(temp->player->firstName);
+        free(temp->player->secondName);
+        free(temp);
+        return;
+    }
+    Team* prev=*teams;
+    while(temp!=NULL)
+    {
+        if(temp->val!=v)
+        {
+            prev=temp;
+            temp=temp->next;
+        } 
+        else 
+        {
+            prev->next=temp->next;
+            free(temp->teamName);
+            deletePlayers(temp);
+            free(temp);
+            return;
+        }
+    }
+}
+
+void deleteList(Team **teams)
+{
+    Team *temp;
+    while(*teams!=NULL)
+    {
+        temp=(*teams)->next;
+        free(teams->player->firstName);
+        free(teams->player->secondName);
+        free(*teams);
+        *teams=temp;
+    }
+    *teams=NULL;
+}

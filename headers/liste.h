@@ -28,3 +28,9 @@ void addTeam(FILE*,Team**);
 Team *createList(FILE*,int*);
 //Calculeaza punctajul echipei.
 void teamPoints(Team*);
+//Cauta punctajul cel mai mic.
+float minPoints(Team*,int);
+//Sterge o singura echipa, in functie de punctaj.
+void deleteTeam(Team**,);
+//Sterge lista de echipe.
+void deleteList(Team**);

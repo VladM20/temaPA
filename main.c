@@ -41,5 +41,6 @@ int main(int argc,char* argv[])
     FILE* output=fopen(argv[3],"wt");
     writeTeams(output,teams,numberOfTeams);
     fclose(output);
+    deleteList(&teams);
     return 0;
 }
