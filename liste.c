@@ -40,7 +40,7 @@ void addTeam(FILE *input,Team **teams)
 
 Team *createList(FILE *input,int *numberOfTeams)
 {
-    Team *teams=(Team*)malloc(sizeof(Team));
+    Team *teams;
     teams->next=NULL;
     fscanf(input,"%d",numberOfTeams);
     for(int i=0;i<*numberOfTeams;i++)
@@ -65,13 +65,17 @@ float minPoints(Team *teams,int numberOfTeams)
     return min;
 }
 
-void deletePlayers(Team **teams)
+void deleteTeamData(Team **team)
 {
-    for(int i=0;i<(*teams)->numberOfPlayers;i++)
+    if((*team)==NULL)
+        return;
+    free((*team)->teamName);
+    for(int i=0;i<(*team)->numberOfPlayers;i++)
     {
-        free((*teams)->player[i].firstName);
-        free((*teams)->player[i].secondName);
+        free((*team)->player[i].firstName);
+        free((*team)->player[i].secondName);
     }
+    free((*team));
 }
 
 void deleteTeam(Team **teams,float minPoints)
@@ -79,19 +83,16 @@ void deleteTeam(Team **teams,float minPoints)
     if(*teams==NULL) 
         return;
     Team *temp=*teams;
-    if (temp->val==v)
+    if (temp->teamPoints==minPoints)
     {
         *teams=(*teams)->next;
-        free(temp->teamName);
-        free(temp->player->firstName);
-        free(temp->player->secondName);
-        free(temp);
+        deleteTeamData(&temp);
         return;
     }
     Team* prev=*teams;
     while(temp!=NULL)
     {
-        if(temp->val!=v)
+        if(temp->teamPoints!=minPoints)
         {
             prev=temp;
             temp=temp->next;
@@ -99,9 +100,7 @@ void deleteTeam(Team **teams,float minPoints)
         else 
         {
             prev->next=temp->next;
-            free(temp->teamName);
-            deletePlayers(temp);
-            free(temp);
+            deleteTeamData(&temp);
             return;
         }
     }
@@ -110,13 +109,11 @@ void deleteTeam(Team **teams,float minPoints)
 void deleteList(Team **teams)
 {
     Team *temp;
-    while(*teams!=NULL)
+    while((*teams)->next!=NULL)
     {
         temp=(*teams)->next;
-        free(teams->player->firstName);
-        free(teams->player->secondName);
-        free(*teams);
+        deleteTeamData(teams);
         *teams=temp;
     }
-    *teams=NULL;
+    (*teams)=NULL;
 }

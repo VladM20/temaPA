@@ -23,7 +23,21 @@ void writeTeams(FILE* output,Team *teams,int numberOfTeams)
         temp=temp->next;
     }
 }
-
+//Gaseste cea mai mare putere a lui 2 mai mica decat n. 
+int powerOf2(int n)
+{
+    if(n<1)
+        return 0;
+    int rezultat=1;
+    for(int i=0;i<8*sizeof(int);i++)    //i merge pana la numarul de biti al n
+    {
+        int incercare=1<<i;             //incercam fiecare putere a lui 2
+        if(incercare>n)
+            break;
+        rezultat=incercare;
+    }
+    return rezultat;
+}
 
 int main(int argc,char* argv[])
 {
@@ -36,8 +50,16 @@ int main(int argc,char* argv[])
     FILE *input=fopen(argv[2],"rt");
     int numberOfTeams=0;
     Team *teams=createList(input,&numberOfTeams);
-    //printTeams(teams,numberOfTeams);
     fclose(input);
+    if(cerinte[1]) 
+    {
+        int target=powerOf2(numberOfTeams);
+        while(numberOfTeams<target)
+        {
+            deleteTeam(&teams,minPoints(teams,numberOfTeams));
+            numberOfTeams--;
+        }
+    }
     FILE* output=fopen(argv[3],"wt");
     writeTeams(output,teams,numberOfTeams);
     fclose(output);
