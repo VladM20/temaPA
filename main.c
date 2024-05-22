@@ -51,15 +51,18 @@ int main(int argc,char* argv[])
     int numberOfTeams=0;
     Team *teams=createList(input,&numberOfTeams);
     fclose(input);
+
     if(cerinte[1]) 
     {
         int target=powerOf2(numberOfTeams);
-        while(numberOfTeams<target)
+        printf("Target:%d\n",target);
+        while(numberOfTeams>target)
         {
             deleteTeam(&teams,minPoints(teams,numberOfTeams));
             numberOfTeams--;
         }
     }
+
     FILE* output=fopen(argv[3],"wt");
     writeTeams(output,teams,numberOfTeams);
     fclose(output);

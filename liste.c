@@ -58,10 +58,14 @@ void teamPoints(Team *team)
 
 float minPoints(Team *teams,int numberOfTeams)
 {
-    float min=0;
-    for(int i=0;i<numberOfTeams;i++)
-        if(min>teams->teamPoints)
-            min=teams->teamPoints;
+    Team *temp=teams;
+    float min=teams->teamPoints;
+    for(int i=0;i<numberOfTeams && temp!=NULL;i++)
+    {
+        if(min>temp->teamPoints)
+            min=temp->teamPoints;
+        temp=temp->next;
+    }
     return min;
 }
 
