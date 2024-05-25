@@ -21,35 +21,35 @@ typedef struct Team
     Player player[10];
 } Team;
 
-typedef struct List
+typedef struct Node
 {
     Team *team;
-    struct List *next;
-} List;
+    struct Node *next;
+} Node;
 
 //Citeste numele unei echipe fara \n.
 int readTeamName(FILE *input,char *dest,int length);
 //Adauga o echipa din fisier.
-void addTeam(FILE *input,List **list);
+void addTeam(FILE *input,Node **list);
 //Creeaza lista de echipe.
-List *createList(FILE *input,int *numberOfTeams);
+Node *createList(FILE *input,int *numberOfTeams);
 //Calculeaza punctajul echipei.
 void teamPoints(Team *team);
 //Cauta punctajul cel mai mic.
-float minPoints(List *list,int numberOfTeams);
+float minPoints(Node *list,int numberOfTeams);
 //Sterge jucatorii si restul echipei.
-void deleteTeamData(List **team);
+void deleteTeamData(Node **team);
 //Sterge o singura echipa, in functie de punctaj.
-void deleteTeam(List **list,float minPoints);
+void deleteTeam(Node **list,float minPoints);
 //Sterge lista de echipe.
-void deleteList(List **list);
+void deleteList(Node **list);
 
 //task 3: Cozi
 
 typedef struct Match
 {
-    Team left,right;
-    struct M *next;
+    Team *left,*right;
+    struct Match *next;
 } Match;
 
 typedef struct Queue
@@ -57,6 +57,16 @@ typedef struct Queue
     Match *front,*rear;
 } Queue;
 
-Queue *createQueue();
+//Creeaza coada de meciuri cu echipe din LIST.
+Queue *createQueue(Node *list);
+//Adauga un meci in coada.
+void enQueue(Queue *q,Team *left,Team *right);
+//Scoate cele doua echipe ale unui meci din coada in LEFT si RIGHT.
+void deQueue(Queue *q,Team *left,Team *right);
+//Sterge coada de meciuri.
+void deleteQueue(Queue *q);
 
-void enQueue(Queue *q,Team left,Team right);
+//task 3: Stive
+
+//Adauga o echipa in stiva.
+void push(Node **top,Team *team);

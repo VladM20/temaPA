@@ -1,9 +1,10 @@
 #include "definitii.h"
 #define NR_CERINTE 5
+
 //Printeaza echipele cu tot cu jucatori pe ecran.
-void printTeams(List *list,int numberOfTeams)
+void printTeams(Node *list,int numberOfTeams)
 {
-    List *temp=list;
+    Node *temp=list;
     for(int j=0;j<numberOfTeams && temp!=NULL;j++)
     {
         printf("%d %s\n",temp->team->numberOfPlayers,temp->team->name);
@@ -14,9 +15,9 @@ void printTeams(List *list,int numberOfTeams)
     }
 }
 //Scrie echipele in fisier.
-void writeTeams(FILE* output,List *list,int numberOfTeams)
+void writeTeams(FILE* output,Node *list,int numberOfTeams)
 {
-    List *temp=list;
+    Node *temp=list;
     for(int j=0;j<numberOfTeams && temp!=NULL;j++)
     {
         fprintf(output,"%s\n",temp->team->name);
@@ -39,6 +40,20 @@ int powerOf2(int n)
     return rezultat;
 }
 
+void playMatch(Team *left,Team *right,Node **winners,Node **losers)
+{
+    if(left->points<right->points)    //pierde stanga
+    {
+        push(winners,right);
+        push(losers,left);
+    }
+    else                              //castiga stanga
+    {
+        push(losers,right);
+        push(winners,left);
+    }
+}
+
 int main(int argc,char* argv[])
 {
     int cerinte[NR_CERINTE];
@@ -49,7 +64,7 @@ int main(int argc,char* argv[])
 
     FILE *input=fopen(argv[2],"rt");
     int numberOfTeams=0;
-    List *list=createList(input,&numberOfTeams);
+    Node *list=createList(input,&numberOfTeams);   
     fclose(input);
 
     if(cerinte[1]) 
@@ -59,6 +74,18 @@ int main(int argc,char* argv[])
         {
             deleteTeam(&list,minPoints(list,numberOfTeams));
             numberOfTeams--;
+        }
+    }
+
+    if(cerinte[2])
+    {
+        Queue *q=createQueue(list);
+        Node *winners=NULL,*losers=NULL;
+        while(q!=NULL)
+        {
+            Team *left,*right;
+            deQueue(q,left,right);
+            playMatch(left,right,&winners,&losers);
         }
     }
 

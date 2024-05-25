@@ -20,30 +20,33 @@ int readTeamName(FILE *input,char *dest,int length)
     return 0;
 }
 
-void addTeam(FILE *input,List **list)
+void addTeam(FILE *input,Node **list)
 {
     Team *newTeam=(Team*)malloc(sizeof(Team));
     fscanf(input,"%d ",&newTeam->numberOfPlayers);
     newTeam->name=(char*)malloc(MAX_LENGTH*sizeof(char));
     readTeamName(input,newTeam->name,MAX_LENGTH);
+    newTeam->name=(char*)realloc(newTeam->name,strlen(newTeam->name)*sizeof(char));
     for(int i=0;i<newTeam->numberOfPlayers;i++)
     {
         newTeam->player[i].firstName=(char*)malloc(MAX_LENGTH*sizeof(char));
         newTeam->player[i].secondName=(char*)malloc(MAX_LENGTH*sizeof(char));
         fscanf(input,"%s %s %d\n",newTeam->player[i].firstName,newTeam->player[i].secondName,&newTeam->player[i].points);
+        newTeam->player[i].firstName=(char*)realloc(newTeam->player[i].firstName,strlen(newTeam->player[i].firstName)*sizeof(char));
+        newTeam->player[i].secondName=(char*)realloc(newTeam->player[i].secondName,strlen(newTeam->player[i].secondName)*sizeof(char));
     }
     fscanf(input,"\n");
     teamPoints(newTeam);
     (*list)->team=newTeam;
 }
 
-List *createList(FILE *input,int *numberOfTeams)
+Node *createList(FILE *input,int *numberOfTeams)
 {
-    List *list=NULL,*temp;
+    Node *list=NULL,*temp;
     fscanf(input,"%d",numberOfTeams);
     for(int i=0;i<*numberOfTeams;i++)
     {
-        temp=(List*)malloc(sizeof(List));
+        temp=(Node*)malloc(sizeof(Node));
         temp->next=NULL;
         addTeam(input,&temp);
         temp->next=list;
@@ -60,9 +63,9 @@ void teamPoints(Team *team)
     team->points=points/team->numberOfPlayers;
 }
 
-float minPoints(List *list,int numberOfTeams)
+float minPoints(Node *list,int numberOfTeams)
 {
-    List *temp=list;
+    Node *temp=list;
     float min=list->team->points;
     for(int i=0;i<numberOfTeams && temp!=NULL;i++)
     {
@@ -73,7 +76,7 @@ float minPoints(List *list,int numberOfTeams)
     return min;
 }
 
-void deleteTeamData(List **list)
+void deleteTeamData(Node **list)
 {
     if((*list)==NULL)
         return;
@@ -86,18 +89,18 @@ void deleteTeamData(List **list)
     free((*list));
 }
 
-void deleteTeam(List **list,float minPoints)
+void deleteTeam(Node **list,float minPoints)
 {
     if(*list==NULL) 
         return;
-    List *temp=*list;
+    Node *temp=*list;
     if (temp->team->points==minPoints)
     {
         *list=(*list)->next;
         deleteTeamData(&temp);
         return;
     }
-    List* prev=*list;
+    Node* prev=*list;
     while(temp!=NULL)
     {
         if(temp->team->points!=minPoints)
@@ -114,9 +117,9 @@ void deleteTeam(List **list,float minPoints)
     }
 }
 
-void deleteList(List **list)
+void deleteList(Node **list)
 {
-    List *temp;
+    Node *temp;
     while((*list)->next!=NULL)
     {
         temp=(*list)->next;
