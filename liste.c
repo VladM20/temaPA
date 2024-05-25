@@ -20,12 +20,12 @@ int readTeamName(FILE *input,char *dest,int length)
     return 0;
 }
 
-void addTeam(FILE *input,Team **teams)
+void addTeam(FILE *input,List **list)
 {
     Team *newTeam=(Team*)malloc(sizeof(Team));
     fscanf(input,"%d ",&newTeam->numberOfPlayers);
-    newTeam->teamName=(char*)malloc(MAX_LENGTH*sizeof(char));
-    readTeamName(input,newTeam->teamName,MAX_LENGTH);
+    newTeam->name=(char*)malloc(MAX_LENGTH*sizeof(char));
+    readTeamName(input,newTeam->name,MAX_LENGTH);
     for(int i=0;i<newTeam->numberOfPlayers;i++)
     {
         newTeam->player[i].firstName=(char*)malloc(MAX_LENGTH*sizeof(char));
@@ -34,17 +34,22 @@ void addTeam(FILE *input,Team **teams)
     }
     fscanf(input,"\n");
     teamPoints(newTeam);
-    newTeam->next=*teams;
-    *teams=newTeam;
+    (*list)->team=newTeam;
 }
 
-Team *createList(FILE *input,int *numberOfTeams)
+List *createList(FILE *input,int *numberOfTeams)
 {
-    Team *teams=NULL;
+    List *list=NULL,*temp;
     fscanf(input,"%d",numberOfTeams);
     for(int i=0;i<*numberOfTeams;i++)
-        addTeam(input,&teams);
-    return teams;
+    {
+        temp=(List*)malloc(sizeof(List));
+        temp->next=NULL;
+        addTeam(input,&temp);
+        temp->next=list;
+        list=temp;
+    }
+    return list;
 }
 
 void teamPoints(Team *team)
@@ -52,50 +57,50 @@ void teamPoints(Team *team)
     float points=0;
     for(int i=0;i<team->numberOfPlayers;i++)
         points+=team->player[i].points;
-    team->teamPoints=points/team->numberOfPlayers;
+    team->points=points/team->numberOfPlayers;
 }
 
-float minPoints(Team *teams,int numberOfTeams)
+float minPoints(List *list,int numberOfTeams)
 {
-    Team *temp=teams;
-    float min=teams->teamPoints;
+    List *temp=list;
+    float min=list->team->points;
     for(int i=0;i<numberOfTeams && temp!=NULL;i++)
     {
-        if(min>temp->teamPoints)
-            min=temp->teamPoints;
+        if(min>temp->team->points)
+            min=temp->team->points;
         temp=temp->next;
     }
     return min;
 }
 
-void deleteTeamData(Team **team)
+void deleteTeamData(List **list)
 {
-    if((*team)==NULL)
+    if((*list)==NULL)
         return;
-    free((*team)->teamName);
-    for(int i=0;i<(*team)->numberOfPlayers;i++)
+    free((*list)->team->name);
+    for(int i=0;i<(*list)->team->numberOfPlayers;i++)
     {
-        free((*team)->player[i].firstName);
-        free((*team)->player[i].secondName);
+        free((*list)->team->player[i].firstName);
+        free((*list)->team->player[i].secondName);
     }
-    free((*team));
+    free((*list));
 }
 
-void deleteTeam(Team **teams,float minPoints)
+void deleteTeam(List **list,float minPoints)
 {
-    if(*teams==NULL) 
+    if(*list==NULL) 
         return;
-    Team *temp=*teams;
-    if (temp->teamPoints==minPoints)
+    List *temp=*list;
+    if (temp->team->points==minPoints)
     {
-        *teams=(*teams)->next;
+        *list=(*list)->next;
         deleteTeamData(&temp);
         return;
     }
-    Team* prev=*teams;
+    List* prev=*list;
     while(temp!=NULL)
     {
-        if(temp->teamPoints!=minPoints)
+        if(temp->team->points!=minPoints)
         {
             prev=temp;
             temp=temp->next;
@@ -109,14 +114,14 @@ void deleteTeam(Team **teams,float minPoints)
     }
 }
 
-void deleteList(Team **teams)
+void deleteList(List **list)
 {
-    Team *temp;
-    while((*teams)->next!=NULL)
+    List *temp;
+    while((*list)->next!=NULL)
     {
-        temp=(*teams)->next;
-        deleteTeamData(teams);
-        *teams=temp;
+        temp=(*list)->next;
+        deleteTeamData(list);
+        *list=temp;
     }
-    (*teams)=NULL;
+    (*list)=NULL;
 }

@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define MAX_LENGTH 50
+#define MAX_LENGTH 100
 
 //task 1 & 2: Liste
 
@@ -16,28 +16,33 @@ typedef struct Player
 typedef struct Team
 {
     int numberOfPlayers;
-    float teamPoints;
-    char *teamName;
+    float points;
+    char *name;
     Player player[10];
-    struct Team *next;
 } Team;
+
+typedef struct List
+{
+    Team *team;
+    struct List *next;
+} List;
 
 //Citeste numele unei echipe fara \n.
 int readTeamName(FILE *input,char *dest,int length);
 //Adauga o echipa din fisier.
-void addTeam(FILE *input,Team **teams);
+void addTeam(FILE *input,List **list);
 //Creeaza lista de echipe.
-Team *createList(FILE *input,int *numberOfTeams);
+List *createList(FILE *input,int *numberOfTeams);
 //Calculeaza punctajul echipei.
 void teamPoints(Team *team);
 //Cauta punctajul cel mai mic.
-float minPoints(Team *teams,int numberOfTeams);
+float minPoints(List *list,int numberOfTeams);
 //Sterge jucatorii si restul echipei.
-void deleteTeamData(Team **team);
+void deleteTeamData(List **team);
 //Sterge o singura echipa, in functie de punctaj.
-void deleteTeam(Team **teams,float minPoints);
+void deleteTeam(List **list,float minPoints);
 //Sterge lista de echipe.
-void deleteList(Team **teams);
+void deleteList(List **list);
 
 //task 3: Cozi
 

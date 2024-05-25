@@ -1,25 +1,25 @@
 #include "definitii.h"
 #define NR_CERINTE 5
 //Printeaza echipele cu tot cu jucatori pe ecran.
-void printTeams(Team *teams,int numberOfTeams)
+void printTeams(List *list,int numberOfTeams)
 {
-    Team *temp=teams;
+    List *temp=list;
     for(int j=0;j<numberOfTeams && temp!=NULL;j++)
     {
-        printf("%d %s\n",temp->numberOfPlayers,temp->teamName);
-        for(int i=0;i<teams->numberOfPlayers;i++)
-            printf("%s %s %d\n",temp->player[i].firstName,temp->player[i].secondName,temp->player[i].points);
+        printf("%d %s\n",temp->team->numberOfPlayers,temp->team->name);
+        for(int i=0;i<list->team->numberOfPlayers;i++)
+            printf("%s %s %d\n",temp->team->player[i].firstName,temp->team->player[i].secondName,temp->team->player[i].points);
         temp=temp->next;
         printf("\n");
     }
 }
 //Scrie echipele in fisier.
-void writeTeams(FILE* output,Team *teams,int numberOfTeams)
+void writeTeams(FILE* output,List *list,int numberOfTeams)
 {
-    Team *temp=teams;
+    List *temp=list;
     for(int j=0;j<numberOfTeams && temp!=NULL;j++)
     {
-        fprintf(output,"%s\n",temp->teamName);
+        fprintf(output,"%s\n",temp->team->name);
         temp=temp->next;
     }
 }
@@ -49,7 +49,7 @@ int main(int argc,char* argv[])
 
     FILE *input=fopen(argv[2],"rt");
     int numberOfTeams=0;
-    Team *teams=createList(input,&numberOfTeams);
+    List *list=createList(input,&numberOfTeams);
     fclose(input);
 
     if(cerinte[1]) 
@@ -57,14 +57,14 @@ int main(int argc,char* argv[])
         int target=powerOf2(numberOfTeams);
         while(numberOfTeams>target)
         {
-            deleteTeam(&teams,minPoints(teams,numberOfTeams));
+            deleteTeam(&list,minPoints(list,numberOfTeams));
             numberOfTeams--;
         }
     }
 
     FILE* output=fopen(argv[3],"wt");
-    writeTeams(output,teams,numberOfTeams);
+    writeTeams(output,list,numberOfTeams);
     fclose(output);
-    deleteList(&teams);
+    deleteList(&list);
     return 0;
 }
