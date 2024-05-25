@@ -1,4 +1,4 @@
-#include "headers/liste.h"
+#include "definitii.h"
 #define NR_CERINTE 5
 //Printeaza echipele cu tot cu jucatori pe ecran.
 void printTeams(Team *teams,int numberOfTeams)
@@ -55,7 +55,6 @@ int main(int argc,char* argv[])
     if(cerinte[1]) 
     {
         int target=powerOf2(numberOfTeams);
-        printf("Target:%d\n",target);
         while(numberOfTeams>target)
         {
             deleteTeam(&teams,minPoints(teams,numberOfTeams));

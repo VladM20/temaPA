@@ -1,4 +1,4 @@
-#include "headers/liste.h"
+#include "definitii.h"
 
 int readTeamName(FILE *input,char *dest,int length)
 {
@@ -40,8 +40,7 @@ void addTeam(FILE *input,Team **teams)
 
 Team *createList(FILE *input,int *numberOfTeams)
 {
-    Team *teams;
-    teams->next=NULL;
+    Team *teams=NULL;
     fscanf(input,"%d",numberOfTeams);
     for(int i=0;i<*numberOfTeams;i++)
         addTeam(input,&teams);
