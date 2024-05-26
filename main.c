@@ -21,6 +21,7 @@ void writeTeams(FILE* output,Node *list,int numberOfTeams)
     for(int j=0;j<numberOfTeams && temp!=NULL;j++)
     {
         fprintf(output,"%s\n",temp->team->name);
+        //printf("%d.%s (%d)\n",j,temp->team->name,strlen(temp->team->name));
         temp=temp->next;
     }
 }
@@ -76,19 +77,19 @@ int main(int argc,char* argv[])
             numberOfTeams--;
         }
     }
-
+    /*
     if(cerinte[2])
     {
         Queue *q=createQueue(list);
         Node *winners=NULL,*losers=NULL;
         while(q!=NULL)
         {
-            Team *left,*right;
+            Team *left=NULL,*right=NULL;
             deQueue(q,left,right);
             playMatch(left,right,&winners,&losers);
         }
     }
-
+    */
     FILE* output=fopen(argv[3],"wt");
     writeTeams(output,list,numberOfTeams);
     fclose(output);

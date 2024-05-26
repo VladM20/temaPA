@@ -57,6 +57,7 @@ void deleteQueue(Queue *q)
     {
         temp=q->front;
         q->front=q->front->next;
+        
         free(temp);
     }
     free(q);

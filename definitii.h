@@ -18,7 +18,7 @@ typedef struct Team
     int numberOfPlayers;
     float points;
     char *name;
-    Player player[10];
+    Player *player;
 } Team;
 
 typedef struct Node
@@ -27,8 +27,14 @@ typedef struct Node
     struct Node *next;
 } Node;
 
+char *strdup(const char *src);
+
 //Citeste numele unei echipe fara \n.
-int readTeamName(FILE *input,char *dest,int length);
+char *readTeamName(FILE *input);
+//Elimina spatiile de la finalul numelui.
+void truncateWhiteSpace(char *name);
+
+char *readName(FILE *input);
 //Adauga o echipa din fisier.
 void addTeam(FILE *input,Node **list);
 //Creeaza lista de echipe.
