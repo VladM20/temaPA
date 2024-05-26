@@ -1,15 +1,27 @@
 #include "definitii.h"
 #define NR_CERINTE 5
 
+int allocWorked(void *pointer,char *function)
+{
+    //printf("DA (%s)\n",function);
+    if(pointer==NULL)
+    {
+        printf("Nu s-a putut aloca memorie in %s\n",function);
+        return 0;
+    }
+    return 1;
+}
+
 //Printeaza echipele cu tot cu jucatori pe ecran.
-void printTeams(Node *list,int numberOfTeams)
+void printTeams(Node *list)
 {
     Node *temp=list;
-    for(int j=0;j<numberOfTeams && temp!=NULL;j++)
+    for(int j=0;temp!=NULL;j++)
     {
         printf("%d %s\n",temp->team->numberOfPlayers,temp->team->name);
-        for(int i=0;i<list->team->numberOfPlayers;i++)
-            printf("%s %s %d\n",temp->team->player[i].firstName,temp->team->player[i].secondName,temp->team->player[i].points);
+        printf("%s %s %.2f\n",temp->team->player[0].firstName,temp->team->player[0].secondName,temp->team->points);
+        //for(int i=0;i<list->team->numberOfPlayers;i++)
+            //printf("%s %s %d\n",temp->team->player[i].firstName,temp->team->player[i].secondName,temp->team->player[i].points);
         temp=temp->next;
         printf("\n");
     }
@@ -21,7 +33,6 @@ void writeTeams(FILE* output,Node *list,int numberOfTeams)
     for(int j=0;j<numberOfTeams && temp!=NULL;j++)
     {
         fprintf(output,"%s\n",temp->team->name);
-        //printf("%d.%s (%d)\n",j,temp->team->name,strlen(temp->team->name));
         temp=temp->next;
     }
 }
@@ -41,17 +52,29 @@ int powerOf2(int n)
     return rezultat;
 }
 
-void playMatch(Team *left,Team *right,Node **winners,Node **losers)
+void playMatch(Team *team1,Team *team2,Node **winners,Node **losers)
 {
-    if(left->points<right->points)    //pierde stanga
+    if(team1->points<team2->points)    //pierde stanga
     {
-        push(winners,right);
-        push(losers,left);
+        push(winners,team2);
+        push(losers,team1);
     }
     else                              //castiga stanga
     {
-        push(losers,right);
-        push(winners,left);
+        push(losers,team2);
+        push(winners,team1);
+    }
+}
+
+void printQ(Queue *q)
+{
+    if(q==NULL)
+        return;
+    Match *temp=q->front;
+    while(temp!=NULL)
+    {
+        printf("%s... \n",temp->team1->name);
+        temp=temp->next;
     }
 }
 
@@ -65,7 +88,7 @@ int main(int argc,char* argv[])
 
     FILE *input=fopen(argv[2],"rt");
     int numberOfTeams=0;
-    Node *list=createList(input,&numberOfTeams);   
+    Node *list=fcreateList(input,&numberOfTeams);   
     fclose(input);
 
     if(cerinte[1]) 
@@ -73,23 +96,38 @@ int main(int argc,char* argv[])
         int target=powerOf2(numberOfTeams);
         while(numberOfTeams>target)
         {
-            deleteTeam(&list,minPoints(list,numberOfTeams));
+            deleteLastTeam(&list,minPoints(list,numberOfTeams));
             numberOfTeams--;
         }
     }
-    /*
+    
     if(cerinte[2])
     {
         Queue *q=createQueue(list);
         Node *winners=NULL,*losers=NULL;
-        while(q!=NULL)
+        //while(numberOfTeams>8)
+        //{
+            while(!isEmpty(q))
+            {
+                Team *team1=NULL,*team2=NULL;
+                deQueue(q,&team1,&team2);
+                //printf("%s - %s\n",team1->name,team2->name);
+                playMatch(team1,team2,&winners,&losers);
+            }
+            /*deleteList(&losers);    //Stiva are aceeasi structura ca o lista.
+            deleteQueue(q);
+            q=createQueue(winners);
+            deleteList(&winners);
+            numberOfTeams/=2;
+        }*/
+        Node *last8Teams=NULL;
+        while(winners!=NULL)
         {
-            Team *left=NULL,*right=NULL;
-            deQueue(q,left,right);
-            playMatch(left,right,&winners,&losers);
+            break;
         }
+
     }
-    */
+    
     FILE* output=fopen(argv[3],"wt");
     writeTeams(output,list,numberOfTeams);
     fclose(output);

@@ -2,14 +2,20 @@
 
 Queue *createQueue(Node *list)
 {
-    Queue *q=(Queue*)malloc(sizeof(Queue));
-    if(q==NULL) 
+    if(list==NULL)
         return NULL;
-    q->front=q->rear=NULL;
-    while(list!=NULL && list->next!=NULL)
+    Queue *q=(Queue*)malloc(sizeof(Queue));
+    if(!allocWorked(q,"createQueue"))
+        return NULL;
+    q->front=NULL;
+    q->rear=NULL;
+
+    Node *temp=list;
+    while(temp!=NULL && temp->next!=NULL)
     {
-        enQueue(q,list->team,(list->next)->team);
-        list=(list->next)->next;
+        //printf("Meci: %s (1)\n%s (2)\n",temp->team->name,temp->next->team->name);
+        enQueue(q,temp->team,temp->next->team);
+        temp=temp->next->next;
     }
     return q;
 }
@@ -19,31 +25,32 @@ int isEmpty(Queue *q)
     return (q->front==NULL);
 }
 
-void enQueue(Queue *q,Team *left,Team *right)
+void enQueue(Queue *q,Team *team1,Team *team2)
 {
     Match *newMatch=(Match*)malloc(sizeof(Match));
-    newMatch->left=left;
-    newMatch->right=right;
+    if(!allocWorked(newMatch,"enQueue"))
+        return;
+    newMatch->team1=team1;
+    newMatch->team2=team2;
     newMatch->next=NULL;
+
     if(q->rear==NULL)
-        q->rear=newMatch;
+        q->rear=q->front=newMatch;
     else
     {
         (q->rear)->next=newMatch;
-        (q->rear)=newMatch;
+        q->rear=newMatch;
     }
-    if(q->front==NULL) 
-        q->front=q->rear;
 }
 
-void deQueue(Queue *q,Team *left,Team *right)
+void deQueue(Queue *q,Team **team1,Team **team2)
 {
-    Match *temp;
+    Match *temp=NULL;
     if(isEmpty(q))
         return;
     temp=q->front;
-    left=temp->left;
-    right=temp->right;
+    *team1=temp->team1;
+    *team2=temp->team2;
     q->front=(q->front)->next;
     if(isEmpty(q))
         q->rear=NULL;
@@ -61,4 +68,5 @@ void deleteQueue(Queue *q)
         free(temp);
     }
     free(q);
+    q=NULL;
 }

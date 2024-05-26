@@ -7,3 +7,12 @@ void push(Node **top,Team *team)
     newTeam->next=*top;
     *top=newTeam;
 }
+
+Team pop(Node **top)
+{
+    Team team=(*(*top)->team);
+    Node *temp=*top;
+    *top=(*top)->next;
+    deleteTeamData(&temp);
+    return team;
+}

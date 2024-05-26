@@ -1,12 +1,5 @@
 #include "definitii.h"
 
-char *strdup(char *src) 
-{
-    char *dst=malloc(strlen(src)+1);
-    strcpy(dst,src);
-    return dst;
-}
-
 char *readTeamName(FILE *input)
 {
     char name[MAX_LENGTH];
@@ -20,7 +13,7 @@ void truncateWhiteSpace(char *name)
     if(name==NULL)
         return;
     int length=strlen(name);
-    while(length>0 && (name[length-1]==' ' || name[length-1]=='\n'))
+    while(length>0 && (name[length-1]==' ' || name[length-1]=='\n'  || name[length-1]=='\r'))
         length--;
     name[length]='\0';
 }
@@ -33,13 +26,56 @@ char *readName(FILE *input)
     return strdup(name);
 }
 
+Team *initializeTeam(int numberOfPlayers)
+{
+    Team *newTeam=(Team*)malloc(sizeof(Team));
+    if(!allocWorked(newTeam,"initializeTeam(newTeam)"))
+        return NULL; 
+
+    newTeam->numberOfPlayers=numberOfPlayers;
+
+    newTeam->name=(char*)malloc(MAX_LENGTH*sizeof(char));
+    if(!allocWorked(newTeam->name,"initializeTeam(name)"))
+        return NULL;
+    
+    newTeam->player=initializePlayers(newTeam->numberOfPlayers);
+    return newTeam;
+}
+
+Player *initializePlayers(int numberOfPlayers)
+{
+    Player *player=(Player*)malloc(numberOfPlayers*sizeof(Player));
+    if(!allocWorked(player,"initializePlayers(player)"))
+        return NULL;
+
+    for(int i=0;i<numberOfPlayers;i++)
+    {
+        player[i].firstName=(char*)malloc(MAX_LENGTH*sizeof(char));
+        if(!allocWorked(player[i].firstName,"initializePlayers(firstName)"))
+            return NULL;
+        player[i].secondName=(char*)malloc(MAX_LENGTH*sizeof(char));
+        if(!allocWorked(player[i].secondName,"initializePlayers(secondName)"))
+            return NULL;
+    }
+    return player;
+}
+
 void addTeam(FILE *input,Node **list)
 {
     Team *newTeam=(Team*)malloc(sizeof(Team));
+    if(!allocWorked(newTeam,"addTeam(newTeam)"))
+        return; 
     fscanf(input,"%d",&(newTeam->numberOfPlayers));
-    fgetc(input);
-    newTeam->player=(Player*)malloc(newTeam->numberOfPlayers*sizeof(Player));
+    fgetc(input);   //scapa de spatiul dintre numarul de jucatori si numele echipei
     newTeam->name=readTeamName(input);
+    if(!allocWorked(newTeam->name,"addTeam(name)"))
+        return;
+
+    newTeam->player=(Player*)malloc(newTeam->numberOfPlayers*sizeof(Player));
+    if(!allocWorked(newTeam->player,"addTeam(newTeam->player)"))
+        return;
+
+
     for(int i=0;i<newTeam->numberOfPlayers;i++)
     {
         newTeam->player[i].firstName=readName(input);
@@ -48,6 +84,9 @@ void addTeam(FILE *input,Node **list)
     }
     teamPoints(newTeam);
     Node *newNode=(Node*)malloc(sizeof(Node));
+    if(!allocWorked(newNode,"addTeam(newNode)"))
+        return;
+
     newNode->team=newTeam;
     newNode->next=NULL;
     if(*list!=NULL)
@@ -55,7 +94,35 @@ void addTeam(FILE *input,Node **list)
     *list=newNode;
 }
 
-Node *createList(FILE *input,int *numberOfTeams)
+void copyTeam(Team *source,Team **destination)
+{
+    Team *temp=(Team*)malloc(sizeof(Team));
+    if(!allocWorked(temp,"copyTeam"))
+        return;
+    
+    strcpy(temp->name,source->name);
+    temp->numberOfPlayers=source->numberOfPlayers;
+    temp->points=source->points;
+    for(int i=0;i<temp->numberOfPlayers;i++)
+    {
+        strcpy(temp->player[i].firstName,source->player[i].firstName);
+        strcpy(temp->player[i].secondName,source->player[i].secondName);
+        temp->player[i].points=source->player[i].points;
+    }
+    *destination=temp;
+}
+
+Node *createList(int numberOfTeams)
+{
+    Node *list=NULL;
+    for(int i=0;i<numberOfTeams;i++)
+    {
+
+    }    
+    return list;
+}
+
+Node *fcreateList(FILE *input,int *numberOfTeams)
 {
     Node *list=NULL;
     fscanf(input,"%d",numberOfTeams);
@@ -98,7 +165,7 @@ void deleteTeamData(Node **list)
     free((*list));
 }
 
-void deleteTeam(Node **list,float minPoints)
+void deleteLastTeam(Node **list,float minPoints)
 {
     if(*list==NULL) 
         return;
@@ -137,4 +204,14 @@ void deleteList(Node **list)
     }
     free(*list);
     (*list)=NULL;
+}
+
+Node *duplicateList(Node *source)
+{
+    Node *destination=NULL;
+    while(source!=NULL)
+    {
+        break;   
+    }
+    return NULL;
 }
