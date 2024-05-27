@@ -26,40 +26,6 @@ char *readName(FILE *input)
     return strdup(name);
 }
 
-Team *initializeTeam(int numberOfPlayers)
-{
-    Team *newTeam=(Team*)malloc(sizeof(Team));
-    if(!allocWorked(newTeam,"initializeTeam(newTeam)"))
-        return NULL; 
-
-    newTeam->numberOfPlayers=numberOfPlayers;
-
-    newTeam->name=(char*)malloc(MAX_LENGTH*sizeof(char));
-    if(!allocWorked(newTeam->name,"initializeTeam(name)"))
-        return NULL;
-    
-    newTeam->player=initializePlayers(newTeam->numberOfPlayers);
-    return newTeam;
-}
-
-Player *initializePlayers(int numberOfPlayers)
-{
-    Player *player=(Player*)malloc(numberOfPlayers*sizeof(Player));
-    if(!allocWorked(player,"initializePlayers(player)"))
-        return NULL;
-
-    for(int i=0;i<numberOfPlayers;i++)
-    {
-        player[i].firstName=(char*)malloc(MAX_LENGTH*sizeof(char));
-        if(!allocWorked(player[i].firstName,"initializePlayers(firstName)"))
-            return NULL;
-        player[i].secondName=(char*)malloc(MAX_LENGTH*sizeof(char));
-        if(!allocWorked(player[i].secondName,"initializePlayers(secondName)"))
-            return NULL;
-    }
-    return player;
-}
-
 void addTeam(FILE *input,Node **list)
 {
     Team *newTeam=(Team*)malloc(sizeof(Team));
@@ -93,33 +59,92 @@ void addTeam(FILE *input,Node **list)
         newNode->next=*list;   
     *list=newNode;
 }
-
+/*
 void copyTeam(Team *source,Team **destination)
 {
-    Team *temp=(Team*)malloc(sizeof(Team));
-    if(!allocWorked(temp,"copyTeam"))
+    Team *newTeam=(Team*)malloc(sizeof(Team));
+    if(!allocWorked(newTeam,"copyTeam"))
+        return;
+
+    newTeam->name=(char*)malloc((strlen(source->name)+1)*sizeof(char));
+    if(!allocWorked(newTeam->name,"copyTeam(newTeam->name)"))
+        return;
+    strcpy(newTeam->name,source->name);
+
+    newTeam->numberOfPlayers=source->numberOfPlayers;
+    newTeam->points=source->points;
+
+    newTeam->player=(Player*)malloc(newTeam->numberOfPlayers*sizeof(Player));
+    if(!allocWorked(newTeam->player,"copyTeam(newTeam->player)"))
         return;
     
-    strcpy(temp->name,source->name);
-    temp->numberOfPlayers=source->numberOfPlayers;
-    temp->points=source->points;
-    for(int i=0;i<temp->numberOfPlayers;i++)
+    for(int i=0;i<newTeam->numberOfPlayers;i++)
     {
-        strcpy(temp->player[i].firstName,source->player[i].firstName);
-        strcpy(temp->player[i].secondName,source->player[i].secondName);
-        temp->player[i].points=source->player[i].points;
+        newTeam->player[i].firstName=(char*)malloc((strlen(source->player[i].firstName)+1)*sizeof(char));
+        if(!allocWorked(newTeam->player[i].firstName,"copyTeam(newTeam->player[i].firstName)"))
+            return;
+        strcpy(newTeam->player[i].firstName,source->player[i].firstName);
+        
+        newTeam->player[i].secondName=(char*)malloc((strlen(source->player[i].secondName)+1)*sizeof(char));
+        if(!allocWorked(newTeam->player[i].secondName,"copyTeam(newTeam->player[i].secondName)"))
+            return;
+        strcpy(newTeam->player[i].secondName,source->player[i].secondName);
+        
+        newTeam->player[i].points=source->player[i].points;
     }
-    *destination=temp;
+    *destination=newTeam;
+    printf("\n_%s_\n",(*destination)->name);
 }
-
-Node *createList(int numberOfTeams)
+*/
+void copyTeam(Team *source, Team *destination) 
 {
-    Node *list=NULL;
-    for(int i=0;i<numberOfTeams;i++)
-    {
+    if(source==NULL || destination==NULL)
+        return;
+        
+    destination->name=(char*)malloc((strlen(source->name)+1)*sizeof(char));
+    if(!allocWorked(destination->name,"copyTeam(destination->name)"))
+        return;
+    strcpy(destination->name,source->name);
 
-    }    
-    return list;
+    destination->numberOfPlayers=source->numberOfPlayers;
+    destination->points=source->points;
+
+    destination->player=(Player*)malloc(destination->numberOfPlayers*sizeof(Player));
+    if(!allocWorked(destination->player,"copyTeam(destination->player)"))
+    {
+        free(destination->name);
+        return;
+    }
+
+    for (int i=0;i<destination->numberOfPlayers;i++) 
+    {
+        destination->player[i].firstName=(char*)malloc((strlen(source->player[i].firstName)+1)*sizeof(char));
+        if(!allocWorked(destination->player[i].firstName,"copyTeam(destination->player[i].firstName)"))
+        {
+            for (int j=0;j<i;j++) 
+                free(destination->player[j].firstName);
+            free(destination->player);
+            free(destination->name);
+            return;
+        }
+        strcpy(destination->player[i].firstName,source->player[i].firstName);
+
+        destination->player[i].secondName=(char*)malloc((strlen(source->player[i].secondName)+1)*sizeof(char));
+        if(!allocWorked(destination->player[i].secondName,"copyTeam(destination->player[i].secondName)"))
+        {
+            for (int j=0;j<i;j++) 
+            {
+                free(destination->player[j].firstName);
+                free(destination->player[j].secondName);
+            }
+            free(destination->player);
+            free(destination->name);
+            return;
+        }
+        strcpy(destination->player[i].secondName,source->player[i].secondName);
+
+        destination->player[i].points=source->player[i].points;
+    }
 }
 
 Node *fcreateList(FILE *input,int *numberOfTeams)
@@ -152,17 +177,33 @@ float minPoints(Node *list,int numberOfTeams)
     return min;
 }
 
+void deleteTeam(Team **team)
+{
+    if(*team==NULL)
+        return;
+    if((*team)->player!=NULL)
+    {
+        for(int i=0;i<(*team)->numberOfPlayers;i++)
+        {
+            free((*team)->player[i].firstName);
+            free((*team)->player[i].secondName);
+        }
+        free((*team)->player);
+    }
+    if((*team)->name!=NULL)
+        free((*team)->name);
+    
+    free((*team));
+    *team=NULL;
+}
+
 void deleteTeamData(Node **list)
 {
-    if((*list)==NULL)
+    if((*list)==NULL || (*list)->team==NULL)
         return;
-    free((*list)->team->name);
-    for(int i=0;i<(*list)->team->numberOfPlayers;i++)
-    {
-        free((*list)->team->player[i].firstName);
-        free((*list)->team->player[i].secondName);
-    }
+    deleteTeam(&((*list)->team));
     free((*list));
+    *list=NULL;
 }
 
 void deleteLastTeam(Node **list,float minPoints)
@@ -195,6 +236,9 @@ void deleteLastTeam(Node **list,float minPoints)
 
 void deleteList(Node **list)
 {
+    if(*list==NULL)
+        return;
+
     Node *temp;
     while((*list)->next!=NULL)
     {
@@ -202,16 +246,43 @@ void deleteList(Node **list)
         deleteTeamData(list);
         *list=temp;
     }
+    if((*list)->next==NULL)
+        deleteTeamData(list);
     free(*list);
     (*list)=NULL;
 }
 
-Node *duplicateList(Node *source)
+void duplicateList(Node *source,Node **destination)
 {
-    Node *destination=NULL;
-    while(source!=NULL)
+    if(source==NULL)
+        return;
+
+    Node *current=source,*end=NULL;
+    *destination=NULL;
+
+    while(current!=NULL)
     {
-        break;   
+        Node *newNode=(Node*)malloc(sizeof(Node));
+        if(!allocWorked(newNode,"duplicateList(newNode)"))
+            return;
+        
+        newNode->team=(Team*)malloc(sizeof(Team));
+        if(!allocWorked(newNode->team,"duplicateList(newNode->team)"))
+            return;
+
+        copyTeam(current->team,newNode->team);
+        newNode->next=NULL;
+
+        if(*destination==NULL)
+        {
+            *destination=newNode;
+            end=newNode;
+        }
+        else
+        {
+            end->next=newNode;
+            end=newNode;
+        }
+        current=current->next;
     }
-    return NULL;
 }

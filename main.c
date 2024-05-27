@@ -3,7 +3,6 @@
 
 int allocWorked(void *pointer,char *function)
 {
-    //printf("DA (%s)\n",function);
     if(pointer==NULL)
     {
         printf("Nu s-a putut aloca memorie in %s\n",function);
@@ -20,8 +19,6 @@ void printTeams(Node *list)
     {
         printf("%d %s\n",temp->team->numberOfPlayers,temp->team->name);
         printf("%s %s %.2f\n",temp->team->player[0].firstName,temp->team->player[0].secondName,temp->team->points);
-        //for(int i=0;i<list->team->numberOfPlayers;i++)
-            //printf("%s %s %d\n",temp->team->player[i].firstName,temp->team->player[i].secondName,temp->team->player[i].points);
         temp=temp->next;
         printf("\n");
     }
@@ -54,26 +51,84 @@ int powerOf2(int n)
 
 void playMatch(Team *team1,Team *team2,Node **winners,Node **losers)
 {
-    if(team1->points<team2->points)    //pierde stanga
+    //printf("%s[%.2f]---%s[%.2f]\n",team1->name,team1->points,team2->name,team2->points);
+    if(team1->points==team2->points)    //pierde team1, castiga team2
     {
+        team2->points++;
         push(winners,team2);
         push(losers,team1);
+        return;
     }
-    else                              //castiga stanga
+    if(team1->points<team2->points)    //pierde team1, castiga team2
     {
+        team2->points++;
+        push(winners,team2);
+        push(losers,team1);
+        return;
+    }
+    else                              //castiga team1, pierde team2
+    {
+        team1->points++;
         push(losers,team2);
         push(winners,team1);
+        return;
     }
 }
 
 void printQ(Queue *q)
 {
     if(q==NULL)
+    {
+        printf("\n...E GOALA COADA...\n");
         return;
+    }
     Match *temp=q->front;
     while(temp!=NULL)
     {
-        printf("%s... \n",temp->team1->name);
+        if(temp->team1==NULL || temp->team2==NULL)
+            printf("ERROR\n");
+        if(temp->team2->name==NULL)
+            printf("Team 2 e de vina\n");
+        printf("...%s...%s... \n",temp->team1->name,temp->team2->name);
+        temp=temp->next;
+    }
+}
+
+void addSpaces(FILE *output,int numberOfSpaces)
+{
+    while(numberOfSpaces)
+    {
+        fprintf(output," ");
+        numberOfSpaces--;
+    }
+}
+
+void writeRoundHeader(FILE *output,int roundNumber)
+{
+    fprintf(output,"\n--- ROUND NO:%d\n",roundNumber);
+}
+
+void writeRound(FILE *output,Team *team1,Team *team2)
+{
+    int leftSpaces,rightSpaces;
+    leftSpaces=ROUND_PADDING-strlen(team1->name);
+    fprintf(output,"%s",team1->name);
+    addSpaces(output,leftSpaces);
+    fprintf(output,"-");
+    rightSpaces=ROUND_PADDING-strlen(team2->name);
+    addSpaces(output,rightSpaces);
+    fprintf(output,"%s\n",team2->name);
+}
+
+void writeWinners(FILE* output,Node *stack,int roundNumber)
+{
+    fprintf(output,"\nWINNERS OF ROUND NO:%d\n",roundNumber);
+    Node *temp=stack;
+    while(temp!=NULL)
+    {
+        fprintf(output,"%s",temp->team->name);
+        addSpaces(output,WINNER_PADDING-strlen(temp->team->name));
+        fprintf(output,"-  %4.2f\n",temp->team->points);
         temp=temp->next;
     }
 }
@@ -91,7 +146,9 @@ int main(int argc,char* argv[])
     Node *list=fcreateList(input,&numberOfTeams);   
     fclose(input);
 
-    if(cerinte[1]) 
+    FILE* output=fopen(argv[3],"wt");
+
+    if(cerinte[1])  //task 2
     {
         int target=powerOf2(numberOfTeams);
         while(numberOfTeams>target)
@@ -100,36 +157,40 @@ int main(int argc,char* argv[])
             numberOfTeams--;
         }
     }
-    
-    if(cerinte[2])
+    writeTeams(output,list,numberOfTeams);  //task 1
+
+    if(cerinte[2])  //task 3
     {
         Queue *q=createQueue(list);
         Node *winners=NULL,*losers=NULL;
-        //while(numberOfTeams>8)
-        //{
+        Node *last8Teams=NULL;
+        int round=0;
+        while(numberOfTeams>1)
+        {
+            round++;
+            writeRoundHeader(output,round);
             while(!isEmpty(q))
             {
                 Team *team1=NULL,*team2=NULL;
                 deQueue(q,&team1,&team2);
-                //printf("%s - %s\n",team1->name,team2->name);
+                writeRound(output,team1,team2);
                 playMatch(team1,team2,&winners,&losers);
             }
-            /*deleteList(&losers);    //Stiva are aceeasi structura ca o lista.
-            deleteQueue(q);
-            q=createQueue(winners);
-            deleteList(&winners);
+            writeWinners(output,winners,round);
+            deleteList(&losers);    //Stiva are aceeasi structura ca o lista.
             numberOfTeams/=2;
-        }*/
-        Node *last8Teams=NULL;
-        while(winners!=NULL)
-        {
-            break;
+            if(numberOfTeams==1)
+                break;
+            if(numberOfTeams==8)
+                duplicateList(winners,&last8Teams);
+            deleteQueue(&q);
+            q=queueFromStack(winners);
+            winners=NULL;
         }
-
+        //printTeams(last8Teams);
     }
     
-    FILE* output=fopen(argv[3],"wt");
-    writeTeams(output,list,numberOfTeams);
+    
     fclose(output);
     deleteList(&list);
     return 0;

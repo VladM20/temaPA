@@ -1,9 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <assert.h>
 
 #define MAX_LENGTH 100
+#define ROUND_PADDING 33
+#define WINNER_PADDING 34
 
 //task 1 & 2: Liste
 
@@ -43,13 +44,15 @@ Player *initializePlayers(int numberOfPlayers);
 //Adauga o echipa din fisier.
 void addTeam(FILE *input,Node **list);
 //Copiaza echipa din source in destination.
-void copyTeam(Team *source,Team **destination);
+void copyTeam(Team *source,Team *destination);
 //Creeaza lista de echipe din fisier.
 Node *fcreateList(FILE *input,int *numberOfTeams);
 //Calculeaza punctajul echipei.
 void teamPoints(Team *team);
 //Cauta punctajul cel mai mic.
 float minPoints(Node *list,int numberOfTeams);
+
+void deleteTeam(Team **team);
 //Sterge jucatorii si restul echipei.
 void deleteTeamData(Node **team);
 //Sterge o singura echipa, in functie de punctaj.
@@ -57,7 +60,7 @@ void deleteLastTeam(Node **list,float minPoints);
 //Sterge lista de echipe.
 void deleteList(Node **list);
 
-Node *duplicateList(Node *source);
+void duplicateList(Node *source,Node **destination);
 
 //task 3: Cozi
 
@@ -81,13 +84,15 @@ void enQueue(Queue *q,Team *team1,Team *team2);
 //Scoate cele doua echipe ale unui meci din coada in LEFT si RIGHT.
 void deQueue(Queue *q,Team **team1,Team **team2);
 //Sterge coada de meciuri.
-void deleteQueue(Queue *q);
+void deleteQueue(Queue **q);
+
+Queue *queueFromStack(Node *stack);
 
 //task 3: Stive
 
 //Adauga o echipa in stiva.
 void push(Node **top,Team *team);
 //Scoate o echipa din stiva.
-Team pop(Node **top);
+Team *pop(Node **top);
 
 void printTeams(Node *list);
