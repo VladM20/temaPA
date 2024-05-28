@@ -1,15 +1,26 @@
 #include "definitii.h"
 
-Queue *createQueue(Node *list)
+int isEmpty(Queue *q)
+{
+    return (q->front==NULL);
+}
+
+Queue *createQueue()
+{
+    Queue *q=(Queue*)malloc(sizeof(Queue));
+    if(!allocWorked(q,"createQueue(q)"))
+        return NULL;
+
+    q->front=NULL;
+    q->rear=NULL;
+    return q;
+}
+
+Queue *ListToQueue(Node *list)
 {
     if(list==NULL)
         return NULL;
-    Queue *q=(Queue*)malloc(sizeof(Queue));
-    if(!allocWorked(q,"createQueue"))
-        return NULL;
-    q->front=NULL;
-    q->rear=NULL;
-
+    Queue *q=createQueue();
     Node *temp=list;
     while(temp!=NULL && temp->next!=NULL)
     {
@@ -19,13 +30,14 @@ Queue *createQueue(Node *list)
     return q;
 }
 
-int isEmpty(Queue *q)
-{
-    return (q->front==NULL);
-}
-
 void enQueue(Queue *q,Team *team1,Team *team2)
 {
+    if(q==NULL || team1==NULL || team2==NULL)
+    {
+        printf("Parametrii gresiti in enQueue\n");
+        return;
+    }
+
     Match *newMatch=(Match*)malloc(sizeof(Match));
     if(!allocWorked(newMatch,"enQueue(newMatch)"))
         return;
@@ -33,12 +45,11 @@ void enQueue(Queue *q,Team *team1,Team *team2)
     newMatch->team1=(Team*)malloc(sizeof(Team));
     if(!allocWorked(newMatch->team1,"enQueue(newMatch->team1)"))
         return;
+    copyTeam(team1,newMatch->team1);
 
     newMatch->team2=(Team*)malloc(sizeof(Team));
     if(!allocWorked(newMatch,"enQueue(newMatch->team2)"))
         return;
-
-    copyTeam(team1,newMatch->team1);
     copyTeam(team2,newMatch->team2);
     newMatch->next=NULL;
 
@@ -49,20 +60,26 @@ void enQueue(Queue *q,Team *team1,Team *team2)
     }
     else
     {
-        (q->rear)->next=newMatch;
+        q->rear->next=newMatch;
         q->rear=newMatch;
     }
 }
 
 void deQueue(Queue *q,Team **team1,Team **team2)
 {
-    Match *temp=NULL;
     if(isEmpty(q))
+    {
+        *team1=NULL;
+        *team2=NULL;
         return;
+    }
 
-    temp=q->front;
-    q->front=(q->front)->next;
+    Match *temp=q->front;
+    q->front=q->front->next;
 
+    *team1=temp->team1;
+    *team2=temp->team2;
+    /*
     *team1=(Team*)malloc(sizeof(Team));
     if(!allocWorked(team1,"deQueue(team1)"))
         return;
@@ -72,9 +89,11 @@ void deQueue(Queue *q,Team **team1,Team **team2)
     if(!allocWorked(team2,"deQueue(team1)"))
         return;
     copyTeam(temp->team2,*team2);
-    
+    */
     if(isEmpty(q))
         q->rear=NULL;
+    //freeTeam(temp->team1);
+    //freeTeam(temp->team2);
     free(temp);
 }
 
@@ -87,8 +106,8 @@ void deleteQueue(Queue **q)
     while(!isEmpty(*q))
     {
         nextMatch=(*q)->front->next;
-        deleteTeam(&(*q)->front->team1);
-        deleteTeam(&(*q)->front->team2);
+        freeTeam((*q)->front->team1);
+        freeTeam((*q)->front->team2);
         free((*q)->front);
         (*q)->front=nextMatch;
     }
@@ -103,14 +122,7 @@ Queue *queueFromStack(Node *stack)
         printf("\nSTIVA GOALA\n");
         return NULL;
     }
-
-    Queue *q=(Queue*)malloc(sizeof(Queue));
-    if(!allocWorked(q,"queueFromStack(q)"))
-        return NULL;
-    
-    q->front=NULL;
-    q->rear=NULL;
-
+    Queue *q=createQueue();
     while(stack!=NULL && stack->next!=NULL)
     {
         Team *team1=pop(&stack);
@@ -119,25 +131,13 @@ Queue *queueFromStack(Node *stack)
             printf("scandal\n");
             break;
         }
-        if(team1->name==NULL)
-            break;
-        //printf("team1: %s\n",team1.name);
+
         Team *team2=pop(&stack);
         if(team2->name==NULL)
+        {
+            printf("scandal2\n");
             break;
-        //printf("team2: %s\n",team2.name);
-        /*
-        Team *newTeam1=(Team*)malloc(sizeof(Team));
-        if(!allocWorked(newTeam1,"queueFromStack(newTeam1)"))
-            return NULL;
-
-        Team *newTeam2=(Team*)malloc(sizeof(Team));
-        if(!allocWorked(newTeam2,"queueFromStack(newTeam2)"))
-            return NULL;
-        
-        copyTeam(&team1,newTeam1);
-        copyTeam(&team2,newTeam2);
-        */
+        }
         enQueue(q,team1,team2);
     }
     return q;
