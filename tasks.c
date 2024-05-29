@@ -68,7 +68,7 @@ void writeWinners(FILE* output,Node *stack,int roundNumber)
     {
         fprintf(output,"%s",temp->team->name);
         addSpaces(output,WINNER_PADDING-strlen(temp->team->name));
-        fprintf(output,"-  %4.2f\n",temp->team->points);
+        fprintf(output,"-  %.2f\n",temp->team->points);
         temp=temp->next;
     }
 }
@@ -81,6 +81,18 @@ void task2(int *numberOfTeams,Node **list)
         deleteLastTeam(list,minPoints(*list,*numberOfTeams));
         (*numberOfTeams)--;
     }
+}
+
+void writeBST(FILE *output,TreeNode *root)
+{
+    if(root==NULL)
+        return;
+    
+    writeBST(output,root->right);
+    fprintf(output,"%s",root->team->name);
+    addSpaces(output,WINNER_PADDING-strlen(root->team->name));
+    fprintf(output,"-  %.2f\n",root->team->points);
+    writeBST(output,root->left);
 }
 
 void task3(FILE *output,int *numberOfTeams,Node **list,Node **last8Teams)
@@ -115,4 +127,17 @@ void task3(FILE *output,int *numberOfTeams,Node **list,Node **last8Teams)
         q=queueFromStack(winners);
         winners=NULL;
     }
+}
+
+void task4(FILE *output,Node **last8Teams)
+{
+    fprintf(output,"\nTOP 8 TEAMS:\n");
+    TreeNode *root=NULL;
+    Node *temp=*last8Teams;
+    while(temp!=NULL)
+    {
+        root=insert(root,temp->team);
+        temp=temp->next;
+    }
+    writeBST(output,root);
 }

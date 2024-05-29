@@ -77,7 +77,7 @@ void deleteList(Node **list);
 //Returneaza o copie alocata dinamic a SOURCE.
 Node *copyList(Node *source);
 
-//task 3: Cozi
+//cozi.c
 
 typedef struct Match
 {
@@ -105,7 +105,7 @@ void deleteQueue(Queue **q);
 //Returneaza o coada populata de elementele din STACK.
 Queue *queueFromStack(Node *stack);
 
-//task 3: Stive
+//stive.c
 
 //Adauga o echipa in stiva.
 void push(Node **top,Team *team);
@@ -132,7 +132,23 @@ void writeWinners(FILE* output,Node *stack,int roundNumber);
 void task2(int *numberOfTeams,Node **list);
 //Executa cerintele pentru task 3.
 void task3(FILE *output,int *numberOfTeams,Node **list,Node **last8Teams);
+//Executa cerintele pentru task 4.
+void task4(FILE *output,Node **last8Teams);
 
+//bst.c
+
+typedef struct TreeNode
+{
+    Team *team;
+    struct TreeNode *left,*right;
+} TreeNode;
+
+//Returneaza un nod nou populat de echipa TEAM. 
+TreeNode *newNode(Team *team);
+//Insereaza in arborele reprezentat de NODE echipa TEAM.
+TreeNode *insert(TreeNode *node,Team *team);
+
+//In main; pentru debugging.
 
 void printQ(Queue *q);
 void printTeams(Node *list);
