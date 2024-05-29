@@ -1,4 +1,4 @@
-# temaPA
+# temaPA - lanParty
 ### Sistem de Gestionare a Turneelor
 
 #### Prezentare Generală
