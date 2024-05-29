@@ -1,8 +1,8 @@
-number=10
+number=13
 
 all: build
 build:
-	gcc -g main.c liste.c cozi.c stive.c tasks.c teams.c bst.c -o lanParty -Wall
+	gcc -g main.c liste.c cozi.c stive.c tasks.c teams.c bst.c avl.c -o lanParty -Wall
 run:
 	./lanParty date/t$(number)/c.in date/t$(number)/d.in r.out
 clean:

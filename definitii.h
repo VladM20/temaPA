@@ -29,6 +29,30 @@ typedef struct Node
     struct Node *next;
 } Node;
 
+typedef struct Match
+{
+    Team *team1,*team2;
+    struct Match *next;
+} Match;
+
+typedef struct Queue
+{
+    Match *front,*rear;
+} Queue;
+
+typedef struct TreeNode
+{
+    Team *team;
+    struct TreeNode *left,*right;
+} TreeNode;
+
+typedef struct AVLNode
+{
+    Team *team;
+    int height;
+    struct AVLNode *left,*right;
+} AVLNode;
+
 //teams.c
 
 //Testeaza daca a fost alocata memorie (returneaza 0 daca POINTER e NULL).
@@ -62,8 +86,12 @@ void copyTeam(Team *source,Team *destination);
 
 //Adauga echipa TEAM in LIST.
 void listAdd(Team *team,Node **list);
+//Copiaza elementul TEAM si il adauga la sfarsitul listei LIST.
+void listAddToEnd(Team *team,Node **list);
 //Creeaza lista de echipe si o populeaza cu date din fisier.
 Node *createList(FILE *input,int *numberOfTeams);
+//Aloca memoria pentru o lista.
+Node *initList();
 //Cauta punctajul cel mai mic din LIST.
 float minPoints(Node *list,int numberOfTeams);
 //Elibereaza memoria alocata pentru TEAM;
@@ -78,17 +106,6 @@ void deleteList(Node **list);
 Node *copyList(Node *source);
 
 //cozi.c
-
-typedef struct Match
-{
-    Team *team1,*team2;
-    struct Match *next;
-} Match;
-
-typedef struct Queue
-{
-    Match *front,*rear;
-} Queue;
 
 //Verifica daca coada Q este goala.
 int isEmpty(Queue *q);
@@ -132,23 +149,44 @@ void writeWinners(FILE* output,Node *stack,int roundNumber);
 void task2(int *numberOfTeams,Node **list);
 //Executa cerintele pentru task 3.
 void task3(FILE *output,int *numberOfTeams,Node **list,Node **last8Teams);
+//Scrie in fisier continutul arborelui ROOT.
+void writeBST(FILE *output,TreeNode *root);
 //Executa cerintele pentru task 4.
-void task4(FILE *output,Node **last8Teams);
+void task4(FILE *output,Node *last8Teams,Node **orderedTeams);
+//Parcurge arborele si scrie in OUTPUT nivelul al 2-lea.
+void writeAVL(FILE *output,AVLNode *root,int level);
+//Executa cerintele pentru task 5.
+void task5(FILE *output,Node *orderedTeams);
 
 //bst.c
-
-typedef struct TreeNode
-{
-    Team *team;
-    struct TreeNode *left,*right;
-} TreeNode;
 
 //Returneaza un nod nou populat de echipa TEAM. 
 TreeNode *newNode(Team *team);
 //Insereaza in arborele reprezentat de NODE echipa TEAM.
 TreeNode *insert(TreeNode *node,Team *team);
+//Elibereaza memoria alocata pentru arborele ROOT.
+void freeTree(TreeNode *root);
 
-//In main; pentru debugging.
+//avl.c
+
+//Returneaza valoarea mai mare.
+int max(int x,int y);
+//Returneaza inaltimea nodului NODE.
+int height(AVLNode *node);
+//Returneaza diferenta de inaltimi a copiilor nodului NODE.
+int NodeBalance(AVLNode *node);
+//Returneaza un nod ce contine o copie a TEAM.
+AVLNode *newAVLNode(Team *team);
+AVLNode *leftRotation(AVLNode *z);
+AVLNode *rightRotation(AVLNode *z);
+//Balanseaza arborele NODE.
+AVLNode *balanceAVL(AVLNode *node,Team *team);
+//Insereaza echipa TEAM in arborele NODE.
+AVLNode *insertAVL(AVLNode *node,Team *team);
+//Elibereaza memoria alocata pentru arborele ROOT.
+void freeAVLTree(AVLNode *root);
+
+//main.c; pentru debugging.
 
 void printQ(Queue *q);
 void printTeams(Node *list);

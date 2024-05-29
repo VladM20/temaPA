@@ -83,18 +83,6 @@ void task2(int *numberOfTeams,Node **list)
     }
 }
 
-void writeBST(FILE *output,TreeNode *root)
-{
-    if(root==NULL)
-        return;
-    
-    writeBST(output,root->right);
-    fprintf(output,"%s",root->team->name);
-    addSpaces(output,WINNER_PADDING-strlen(root->team->name));
-    fprintf(output,"-  %.2f\n",root->team->points);
-    writeBST(output,root->left);
-}
-
 void task3(FILE *output,int *numberOfTeams,Node **list,Node **last8Teams)
 {
     Queue *q=ListToQueue(*list);
@@ -129,15 +117,64 @@ void task3(FILE *output,int *numberOfTeams,Node **list,Node **last8Teams)
     }
 }
 
-void task4(FILE *output,Node **last8Teams)
+void writeBST(FILE *output,TreeNode *root)
+{
+    if(root==NULL)
+        return;
+    
+    writeBST(output,root->right);
+    fprintf(output,"%s",root->team->name);
+    addSpaces(output,WINNER_PADDING-strlen(root->team->name));
+    fprintf(output,"-  %.2f\n",root->team->points);
+    writeBST(output,root->left);
+}
+
+void BSTToList(TreeNode *root,Node **list)
+{
+    if(root==NULL)
+        return;
+
+    BSTToList(root->right,list);
+    listAddToEnd(root->team,list);
+    BSTToList(root->left,list);
+}
+
+void task4(FILE *output,Node *last8Teams,Node **orderedTeams)
 {
     fprintf(output,"\nTOP 8 TEAMS:\n");
     TreeNode *root=NULL;
-    Node *temp=*last8Teams;
+    Node *temp=last8Teams;
     while(temp!=NULL)
     {
         root=insert(root,temp->team);
         temp=temp->next;
     }
+    *orderedTeams=NULL;
+    BSTToList(root,orderedTeams);
     writeBST(output,root);
+    freeTree(root);
+}
+
+void writeAVL(FILE *output,AVLNode *root,int level)
+{
+    if(root==NULL)
+        return;
+    if(level==2)
+        fprintf(output,"%s\n",root->team->name); 
+    writeAVL(output,root->right,level+1);
+    writeAVL(output,root->left,level+1);
+}
+
+void task5(FILE *output,Node *orderedTeams)
+{
+    AVLNode *root=NULL;
+    Node *temp=orderedTeams;
+    while(temp!=NULL)
+    {
+        root=insertAVL(root,temp->team);
+        temp=temp->next;
+    }
+    fprintf(output,"\nTHE LEVEL 2 TEAMS ARE: \n");
+    writeAVL(output,root,0);
+    freeAVLTree(root);
 }

@@ -53,8 +53,17 @@ int main(int argc,char* argv[])
     if(cerinte[2])  //task 3
         task3(output,&numberOfTeams,&list,&last8Teams);
 
+    Node *orderedTeams=NULL;
     if(cerinte[3])  //task 4
-        task4(output,&last8Teams);
+    {
+        task4(output,last8Teams,&orderedTeams);
+        deleteList(&last8Teams);
+    }
+    if(cerinte[4])  //task 5
+    {
+        task5(output,orderedTeams);
+        deleteList(&orderedTeams);
+    }
     fclose(output);
     deleteList(&list);
     return 0;

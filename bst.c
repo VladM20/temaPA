@@ -36,3 +36,12 @@ TreeNode *insert(TreeNode *node,Team *team)
          }
     return node;
 }
+
+void freeTree(TreeNode *root)
+{
+    if(root==NULL)
+        return;
+    freeTree(root->left);
+    freeTree(root->right);
+    free(root);
+}

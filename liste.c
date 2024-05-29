@@ -17,12 +17,53 @@ void listAdd(Team *team,Node **list)
     *list=newNode;
 }
 
+void listAddToEnd(Team *team,Node **list)
+{
+    if(team==NULL)
+    {
+        printf("Parametrii listAddToEnd gresiti.\n");
+        return;
+    }
+    
+    Node *newNode=(Node*)malloc(sizeof(Node));
+    if(!allocWorked(newNode,"listAddToEnd(newNode)"))
+        return;
+
+    newNode->team=(Team*)malloc(sizeof(Team));
+    if(!allocWorked(newNode->team,"listAddtoEnd(newNode->team)"))
+        return;
+
+    newNode->next=NULL;
+    copyTeam(team,newNode->team);
+    if(*list==NULL)
+        *list=newNode;
+    else
+    {
+        Node *temp=*list;
+        while(temp->next!=NULL)
+            temp=temp->next;
+        temp->next=newNode;
+    }
+}
+
 Node *createList(FILE *input,int *numberOfTeams)
 {
     Node *list=NULL;
     fscanf(input,"%d",numberOfTeams);
     for(int i=0;i<*numberOfTeams;i++)
         listAdd(readTeam(input),&list);
+    return list;
+}
+
+Node *initList()
+{
+    Node *list=(Node*)malloc(sizeof(Node));
+    if(!allocWorked(list,"BSTToList(list)"))
+        return NULL;
+    list->team=(Team*)malloc(sizeof(Team));
+    if(!allocWorked(list->team,"BSTToList(list->team)"))
+        return NULL;
+    list->next=NULL;
     return list;
 }
 
